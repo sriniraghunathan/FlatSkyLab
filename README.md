@@ -18,4 +18,5 @@ FlatSkyLab provides tools for estimating the power spectrum of flatsky maps and 
 ---
 ## Examples
 * Check the [examples](https://github.com/sriniraghunathan/FlatSkyLab/tree/main/examples) folder
-	*  [`make_corr_map_realisations.ipynb`](https://github.com/sriniraghunathan/FlatSkyLab/blob/main/examples/make_corr_map_realisations.ipynb)
+	*  [`make_corr_map_realisations.ipynb`](https://github.com/sriniraghunathan/FlatSkyLab/blob/main/examples/make_corr_map_realisations.ipynb): Correalted simulations of flatsky maps across multiple frequency bands.
+ 	*  [`make_corr_tod_realisations.ipynb`](https://github.com/sriniraghunathan/FlatSkyLab/blob/main/examples/make_corr_tod_realisations.ipynb): Correalted simulations of TOD across multiple detectors.
