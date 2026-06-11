@@ -445,6 +445,7 @@ def make_gaussian_realisations(el, cl_dict, sim_shape, pixel_res_radians_or_inv_
                 if a>i: continue
                 curr_sim_fft = curr_sim_fft + gauss_reals_fft_arr[a] * tij_dic[(i,a)]
         curr_sim_fft = curr_sim_fft * norm
+        curr_sim_fft[np.isnan(curr_sim_fft) | np.isinf(curr_sim_fft)] = 0.
         curr_sim = ifftvar( curr_sim_fft ).real
         curr_sim = curr_sim - np.mean( curr_sim )
         sim_arr.append( curr_sim )

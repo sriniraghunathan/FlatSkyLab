@@ -41,6 +41,7 @@ def detector_noise_model(noise_level, fknee, alphaknee, total_samples, sample_fr
     freq = np.fft.fftfreq(total_samples, 1/sample_freq) #TOD frequencies.
     noise_powspec_white = np.tile( noise_level**2., len(freq) )
     noise_powspec_one_over_f = noise_level**2. * (fknee/freq)**alphaknee
+    noise_powspec_one_over_f[np.isinf(noise_powspec_one_over_f) | np.isnan(noise_powspec_one_over_f)] = 0.
     noise_powspec = noise_powspec_one_over_f + noise_powspec_white
     
     return freq, noise_powspec, noise_powspec_one_over_f, noise_powspec_white
