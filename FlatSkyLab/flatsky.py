@@ -261,12 +261,9 @@ def radial_profile(z, xy = None, minbin = 0., maxbin = 10., binsize = 1., get_er
         hits[ib] = total
 
         if total > 0:
-            ###print(ib, b, total, np.sum(imrad), imrad)
-            # mean value in each radial bin
             vals[ib] = np.sum(imrad) / total
             errors[ib] = np.std(imrad)
 
-    #bins = radial_bins + binsize / 2.0
     bins = np.asarray( [(b1b2[0]+b1b2[1])/2 for b1b2 in radial_bins] )
     std_mean = np.sum(errors * hits) / np.sum(hits)
     
