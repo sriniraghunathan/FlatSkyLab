@@ -31,7 +31,7 @@ def get_lxly(map_shape, pixel_res_radians):
 
     return lx, ly
 
-def map2cl(map_shape, pixel_res_radians, flatskymap1, flatskymap2 = None, minbin = 0, maxbin = 10000, binsize = 100, mask = None, filter_2d = None):
+def map2cl(map_shape, pixel_res_radians, flatskymap1, flatskymap2 = None, minbin = 0, maxbin = 10000, binsize = 100, mask = None, filter_2d = None, ell_bins = None):
 
     """
     map2cl module - get the power spectra of map/maps
@@ -65,6 +65,8 @@ def map2cl(map_shape, pixel_res_radians, flatskymap1, flatskymap2 = None, minbin
     filter_2d: array
         Filter transfer function that has information about the modes that are filtered.
         Default is None.
+    ell_bins: array
+        Custom multipoles for averaging the power spectra.
 
     Returns
     -------
@@ -92,7 +94,7 @@ def map2cl(map_shape, pixel_res_radians, flatskymap1, flatskymap2 = None, minbin
         flatskymap_psd[np.isnan(flatskymap_psd) | np.isinf(flatskymap_psd)] = 0.
 
 
-    rad_prf = radial_profile(flatskymap_psd, (lx,ly), binsize = binsize, minbin = minbin, maxbin = maxbin)
+    rad_prf = radial_profile(flatskymap_psd, (lx,ly), binsize = binsize, minbin = minbin, maxbin = maxbin, radial_bins = ell_bins)
     el, cl = rad_prf[:,0], rad_prf[:,1]
 
     if mask is not None:
@@ -192,7 +194,9 @@ def apod_mask(x_grid, y_grid, mask_radius, perform_apod = True, mask_shape = 'ci
     return mask
 
 
-def radial_profile(z, xy = None, minbin = 0., maxbin = 10., binsize = 1., get_errors = False):
+def radial_profile(z, xy = None, minbin = 0., maxbin = 10., binsize = 1., get_errors = False, radial_bins = None):
+    radial_bins: None
+        Supply your own ell bins        
 
     """
     get the radial profile of an image (both real and fourier space).
@@ -220,6 +224,8 @@ def radial_profile(z, xy = None, minbin = 0., maxbin = 10., binsize = 1., get_er
         obtain scatter in each bin.
         This is not the error due to variance. Just the sample variance.
         Default is False.
+    radial_bins: None
+        Supply your own radial bins for radial averaging.
 
     Returns
     -------
@@ -239,29 +245,37 @@ def radial_profile(z, xy = None, minbin = 0., maxbin = 10., binsize = 1., get_er
 
     #radius = np.hypot(X,Y) * 60.
     radius = (x**2. + y**2.) ** 0.5
+    if radial_bins is None:
+        radial_bins_tmp = np.arange(minbin, maxbin, binsize)
+        radial_bins = [(b1, b1+binsize) for b1 in radial_bins_tmp]
     
-    binarr=np.arange(minbin, maxbin, binsize)
-    radprf=np.zeros((len(binarr),3))
+    hits = np.zeros(len(radial_bins), dtype=float)
+    vals = np.zeros_like(hits)
+    errors = np.zeros_like(hits)
 
-    hit_count=[]
+    for ib, b1b2 in enumerate(radial_bins):
+        b1, b2 = b1b2
+        inds = np.where((radius >= b1) & (radius < b2))
+        imrad = image[inds]
+        total = np.sum(imrad != 0.0)
+        hits[ib] = total
 
-    for b,bin in enumerate(binarr):
-        ind=np.where((radius>=bin) & (radius<bin+binsize))
-        radprf[b,0]=(bin+binsize/2.)
-        hits = len(np.where(abs(z[ind])>0.)[0])
+        if total > 0:
+            ###print(ib, b, total, np.sum(imrad), imrad)
+            # mean value in each radial bin
+            vals[ib] = np.sum(imrad) / total
+            errors[ib] = np.std(imrad)
 
-        if hits>0:
-            radprf[b,1]=np.sum(z[ind])/hits
-            radprf[b,2]=np.std(z[ind])
-        hit_count.append(hits)
+    #bins = radial_bins + binsize / 2.0
+    bins = np.asarray( [(b1b2[0]+b1b2[1])/2 for b1b2 in radial_bins] )
+    std_mean = np.sum(errors * hits) / np.sum(hits)
+    
+    if return_errors:
+        errors = std_mean / hits ** 0.5
+        return bins, vals, errors
+    else:
+        return bins, vals
 
-    hit_count=np.asarray(hit_count)
-    std_mean=np.sum(radprf[:,2]*hit_count)/np.sum(hit_count)
-    if get_errors:
-        errval=std_mean/(hit_count)**0.5
-        radprf[:,2]=errval
-
-    return radprf
 
 def make_gaussian_realisations(el, cl_dict, sim_shape, pixel_res_radians_or_inv_samp_freq):
 
