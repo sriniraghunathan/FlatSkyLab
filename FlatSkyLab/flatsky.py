@@ -195,9 +195,6 @@ def apod_mask(x_grid, y_grid, mask_radius, perform_apod = True, mask_shape = 'ci
 
 
 def radial_profile(z, xy = None, minbin = 0., maxbin = 10., binsize = 1., get_errors = False, radial_bins = None):
-    radial_bins: None
-        Supply your own ell bins        
-
     """
     get the radial profile of an image (both real and fourier space).
     Can be used to compute radial profile of stacked profiles or 2D power spectrum.
