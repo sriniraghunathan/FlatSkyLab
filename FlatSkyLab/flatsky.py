@@ -264,11 +264,7 @@ def radial_profile(z, xy = None, minbin = 0., maxbin = 10., binsize = 1., get_er
     bins = np.asarray( [(b1b2[0]+b1b2[1])/2 for b1b2 in radial_bins] )
     std_mean = np.sum(errors * hits) / np.sum(hits)
     
-    if return_errors:
-        errors = std_mean / hits ** 0.5
-        return bins, vals, errors
-    else:
-        return bins, vals
+    return bins, vals
 
 
 def make_gaussian_realisations(el, cl_dict, sim_shape, pixel_res_radians_or_inv_samp_freq):
