@@ -95,6 +95,7 @@ def map2cl(map_shape, pixel_res_radians, flatskymap1, flatskymap2 = None, minbin
 
 
     rad_prf = radial_profile(flatskymap_psd, (lx,ly), binsize = binsize, minbin = minbin, maxbin = maxbin, radial_bins = ell_bins)
+    print(rad_prf.shape)
     el, cl = rad_prf[:,0], rad_prf[:,1]
 
     if mask is not None:
