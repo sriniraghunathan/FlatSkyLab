@@ -94,10 +94,8 @@ def map2cl(map_shape, pixel_res_radians, flatskymap1, flatskymap2 = None, minbin
         flatskymap_psd[np.isnan(flatskymap_psd) | np.isinf(flatskymap_psd)] = 0.
 
 
-    rad_prf = radial_profile(flatskymap_psd, (lx,ly), binsize = binsize, minbin = minbin, maxbin = maxbin, radial_bins = ell_bins)
-    print(rad_prf.shape)
-    el, cl = rad_prf[:,0], rad_prf[:,1]
-
+    el, cl = radial_profile(flatskymap_psd, (lx,ly), binsize = binsize, minbin = minbin, maxbin = maxbin, radial_bins = ell_bins)
+    
     if mask is not None:
         fsky = np.mean(mask**2.)
         cl /= fsky
@@ -263,8 +261,7 @@ def radial_profile(z, xy = None, minbin = 0., maxbin = 10., binsize = 1., get_er
             errors[ib] = np.std(imrad)
 
     bins = np.asarray( [(b1b2[0]+b1b2[1])/2 for b1b2 in radial_bins] )
-    std_mean = np.sum(errors * hits) / np.sum(hits)
-    
+
     return bins, vals
 
 
