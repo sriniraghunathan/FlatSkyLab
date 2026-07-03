@@ -236,7 +236,7 @@ def radial_profile(z, xy = None, minbin = 0., maxbin = 10., binsize = 1., get_er
 
     z = np.asarray(z)
     if xy is None:
-        x, y = np.indices(image.shape)
+        x, y = np.indices(z.shape)
     else:
         x, y = xy
 
@@ -253,7 +253,7 @@ def radial_profile(z, xy = None, minbin = 0., maxbin = 10., binsize = 1., get_er
     for ib, b1b2 in enumerate(radial_bins):
         b1, b2 = b1b2
         inds = np.where((radius >= b1) & (radius < b2))
-        imrad = image[inds]
+        imrad = z[inds]
         total = np.sum(imrad != 0.0)
         hits[ib] = total
 
