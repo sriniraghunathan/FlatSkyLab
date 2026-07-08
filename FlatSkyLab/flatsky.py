@@ -455,6 +455,99 @@ def make_gaussian_realisations(el, cl_dict, sim_shape, pixel_res_radians_or_inv_
 
     return sim_arr    
 
+def get_fourier_filters(map_shape, pixel_res_radians, l1_cutoff, l2_cutoff = None, filter_type = 'lpf'):
+    
+    """
+    get_fourier_filters module - Get Fourier space filters.
+    Supports low-pass, high-pass, and band-pass filters.
+
+    Parameters
+    ----------
+    map_shape: array_like, shape (2 x 1)
+        dimension on the flatskymap.
+    pixel_res_radians: float
+        map pixel resolution in radians.
+    l1_cutoff: int
+        First \ell cutoff for the filter.
+        LPF --> modes \ell<l1_cutoff will be retained.
+        HPF --> modes \ell>l1_cutoff will be retained.
+    l2_cutoff: int
+        Second \ell cutoff for the filter.
+        Used for band pass filter.
+        BPF --> Modes \ell \in [l1_cutoff, l2_cutoff] will be retained.
+    filter_type: str
+        'lpf': Low-pass filter.
+        'hpf': High-pass filter.
+        'bpf': Band-pass filter.
+        Default is lpf.
+
+    Returns
+    -------
+    fft_filter: array.
+        2D Fourier filter.
+    """
+
+    assert filter_type in ['lpf', 'hpf', 'bpf']
+    if filter_type == 'bpf':
+        assert l2_cutoff is not None
+
+    lx, ly = get_lxly(map_shape, pixel_res_radians)
+    ell = np.sqrt(lx**2. + ly**2.)
+    fft_filter = np.ones(ell.shape)
+    if filter_type == 0:
+        fft_filter[ell>lmin_lmax] = 0.
+    elif filter_type == 1:
+        fft_filter[ell<lmin_lmax] = 0.
+    elif filter_type == 2:
+        lmin, lmax = lmin_lmax
+        fft_filter[ell<lmin] = 0.
+        fft_filter[ell>lmax] = 0
+
+    return fft_filter
+
+def get_wiener_filter(map_shape, pixel_res_radians, cl_signal, cl_noise, el = None, return_2D = True):
+
+    """
+    get_fourier_filters module - Get Fourier space filters.
+    Supports low-pass, high-pass, and band-pass filters.
+
+    Parameters
+    ----------
+    map_shape: array_like, shape (2 x 1)
+        dimension on the flatskymap.
+    pixel_res_radians: float
+        map pixel resolution in radians.
+    cl_signal: array
+        Signal power spectrum.
+    cl_noise: array
+        Noise power spectrum.
+    el: array
+        Multipoles over which the signal and noise spectra are defined.
+        Default is None and will be calculated as arange(len(cl_signal))
+    return_2D: Bool
+        Return the Wiener filter either in 1d or 2D.
+        Default is True.
+
+    Returns
+    -------
+    wiener_filter: array.
+        1d or 2D Fourier-space Wiener filter.
+    """
+
+    if el is None:
+        el = np.arange(len(cl_signal))
+
+    if return_2D: #get 2D spectra
+        cl_signal2d = cl_to_cl2d(el, cl_signal, map_shape, pixel_res_radians)
+        cl_noise2d = cl_to_cl2d(el, cl_signal, map_shape, pixel_res_radians)
+        wiener_filter = cl_signal2d / (cl_signal2d + cl_noise2d)
+    else:
+        wiener_filter = cl_signal / (cl_signal + cl_noise)
+
+    wiener_filter[np.isnan(wiener_filter)] = 0.
+    wiener_filter[np.isinf(wiener_filter)] = 0.
+
+    return wiener_filter    
 ################################################################################################################
 ################################################################################################################
 ################################################################################################################
