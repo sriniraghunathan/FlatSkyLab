@@ -273,12 +273,6 @@ def radial_profile(z, xy = None, minbin = 0., maxbin = 10., binsize = 1., get_er
 
 def make_gaussian_realisations(el, cl_dict, sim_shape, pixel_res_radians_or_inv_samp_freq):
 
-    '''
-    #names to be changed
-    pixel_res_radians --> something that is common for tod and sim.
-    '''
-
-
     """
     return (correlated) Gaussian realisations of flat sky maps with an underlying power spectrum
     defined by cl_dict.
