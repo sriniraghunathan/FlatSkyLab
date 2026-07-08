@@ -47,7 +47,9 @@
 <li class="toctree-l2"><a class="reference internal" href="#module-flatsky">flatsky.py</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#flatsky.apod_mask"><code class="docutils literal notranslate"><span class="pre">apod_mask()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#flatsky.cl_to_cl2d"><code class="docutils literal notranslate"><span class="pre">cl_to_cl2d()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#flatsky.get_fourier_filters"><code class="docutils literal notranslate"><span class="pre">get_fourier_filters()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#flatsky.get_lxly"><code class="docutils literal notranslate"><span class="pre">get_lxly()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#flatsky.get_wiener_filter"><code class="docutils literal notranslate"><span class="pre">get_wiener_filter()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#flatsky.make_gaussian_realisations"><code class="docutils literal notranslate"><span class="pre">make_gaussian_realisations()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#flatsky.map2cl"><code class="docutils literal notranslate"><span class="pre">map2cl()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#flatsky.radial_profile"><code class="docutils literal notranslate"><span class="pre">radial_profile()</span></code></a></li>
@@ -149,6 +151,37 @@ default is zero.</p></li>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="flatsky.get_fourier_filters">
+<span class="sig-prename descclassname"><span class="pre">flatsky.</span></span><span class="sig-name descname"><span class="pre">get_fourier_filters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">map_shape</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pixel_res_radians</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">l1_cutoff</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">l2_cutoff</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filter_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'lpf'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#flatsky.get_fourier_filters" title="Link to this definition"></a></dt>
+<dd><p>get_fourier_filters module - Get Fourier space filters.
+Supports low-pass, high-pass, and band-pass filters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>map_shape</strong> (<em>array_like</em><em>, </em><em>shape</em><em> (</em><em>2 x 1</em><em>)</em>) – dimension on the flatskymap.</p></li>
+<li><p><strong>pixel_res_radians</strong> (<em>float</em>) – map pixel resolution in radians.</p></li>
+<li><p><strong>l1_cutoff</strong> (<em>int</em>) – First ell cutoff for the filter.
+LPF –&gt; modes ell&lt;l1_cutoff will be retained.
+HPF –&gt; modes ell&gt;l1_cutoff will be retained.</p></li>
+<li><p><strong>l2_cutoff</strong> (<em>int</em>) – Second ell cutoff for the filter.
+Used for band pass filter.
+BPF –&gt; Modes ell in [l1_cutoff, l2_cutoff] will be retained.</p></li>
+<li><p><strong>filter_type</strong> (<em>str</em>) – ‘lpf’: Low-pass filter.
+‘hpf’: High-pass filter.
+‘bpf’: Band-pass filter.
+Default is lpf.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>fft_filter</strong> – 2D Fourier filter.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>array.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="flatsky.get_lxly">
 <span class="sig-prename descclassname"><span class="pre">flatsky.</span></span><span class="sig-name descname"><span class="pre">get_lxly</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">map_shape</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pixel_res_radians</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#flatsky.get_lxly" title="Link to this definition"></a></dt>
 <dd><p>return lx, ly modes (kx, ky Fourier modes) for a flatsky map grid.</p>
@@ -169,15 +202,70 @@ default is zero.</p></li>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="flatsky.get_wiener_filter">
+<span class="sig-prename descclassname"><span class="pre">flatsky.</span></span><span class="sig-name descname"><span class="pre">get_wiener_filter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">map_shape</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pixel_res_radians</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cl_signal</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cl_noise</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">el</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_2D</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#flatsky.get_wiener_filter" title="Link to this definition"></a></dt>
+<dd><p>get_fourier_filters module - Get Fourier space filters.
+Supports low-pass, high-pass, and band-pass filters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>map_shape</strong> (<em>array_like</em><em>, </em><em>shape</em><em> (</em><em>2 x 1</em><em>)</em>) – dimension on the flatskymap.</p></li>
+<li><p><strong>pixel_res_radians</strong> (<em>float</em>) – map pixel resolution in radians.</p></li>
+<li><p><strong>cl_signal</strong> (<em>array</em>) – Signal power spectrum.</p></li>
+<li><p><strong>cl_noise</strong> (<em>array</em>) – Noise power spectrum.</p></li>
+<li><p><strong>el</strong> (<em>array</em>) – Multipoles over which the signal and noise spectra are defined.
+Default is None and will be calculated as arange(len(cl_signal))</p></li>
+<li><p><strong>return_2D</strong> (<em>Bool</em>) – Return the Wiener filter either in 1d or 2D.
+Default is True.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>wiener_filter</strong> – 1d or 2D Fourier-space Wiener filter.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>array.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="flatsky.make_gaussian_realisations">
 <span class="sig-prename descclassname"><span class="pre">flatsky.</span></span><span class="sig-name descname"><span class="pre">make_gaussian_realisations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">el</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cl_dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sim_shape</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pixel_res_radians_or_inv_samp_freq</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#flatsky.make_gaussian_realisations" title="Link to this definition"></a></dt>
-<dd><p>#names to be changed
-pixel_res_radians –&gt; something that is common for tod and sim.</p>
+<dd><p>return (correlated) Gaussian realisations of flat sky maps with an underlying power spectrum
+defined by cl_dict.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>el</strong> (<em>array</em>) – Multipoles over which the power spectrium is defined.</p></li>
+<li><p><strong>cl_dict</strong> (<em>dictionary</em>) – Contains the auto- and cross-power spectra of multiple bands.
+Keys are simple band incides.
+Keys must be 00, 11, 01 for 2 maps;
+Keys must be 00, 11, 22, 01, 02, 12 for 3 maps; and so on
+where
+00 - 90x90 auto.
+11 - 150x150 auto.
+22 - 220x220 auto.
+01 - 90x150 cross.
+02 - 90x220 cross.
+12 - 150x220 cross.</p></li>
+<li><p><strong>sim_shape</strong> (<em>array_like</em><em>, </em><em>shape</em><em> (</em><em>N x 1</em><em>)</em>) – dimension of the sims.</p></li>
+<li><p><strong>pixel_res_radians_or_inv_samp_freq</strong> (<em>float</em>) – map pixel resolution in radians or
+inv tod sampling frequency</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>sim_arr</strong> – Correlated simulated maps.
+returns N maps for N(N+1)/2 spectra.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>array</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="flatsky.map2cl">
-<span class="sig-prename descclassname"><span class="pre">flatsky.</span></span><span class="sig-name descname"><span class="pre">map2cl</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">map_shape</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pixel_res_radians</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flatskymap1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flatskymap2</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minbin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxbin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">binsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filter_2d</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#flatsky.map2cl" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">flatsky.</span></span><span class="sig-name descname"><span class="pre">map2cl</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">map_shape</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pixel_res_radians</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flatskymap1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flatskymap2</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minbin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxbin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">binsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filter_2d</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ell_bins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_2D</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#flatsky.map2cl" title="Link to this definition"></a></dt>
 <dd><p>map2cl module - get the power spectra of map/maps</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -200,13 +288,16 @@ Assumes that the mask is already applied to the mask.
 Default is None.</p></li>
 <li><p><strong>filter_2d</strong> (<em>array</em>) – Filter transfer function that has information about the modes that are filtered.
 Default is None.</p></li>
+<li><p><strong>ell_bins</strong> (<em>array</em>) – Custom multipoles for averaging the power spectra.</p></li>
+<li><p><strong>return_2D</strong> (<em>bool</em>) – If True, return the 2D PSD.
+Default is False.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><ul class="simple">
 <li><p><strong>el</strong> (<em>array.</em>) – Multipoles (scales) over which the power spectrum is defined.</p></li>
-<li><p><strong>cl</strong> (<em>array.</em>) – 1d power spectrum.
-Azimuthally averaged (binned) equivalent of FFT( abs(map)^2 ).</p></li>
+<li><p><strong>cl</strong> (<em>array.</em>) – 2D PSD
+or 1d azimuthally averaged (binned) equivalent of FFT( abs(map)^2 ).</p></li>
 </ul>
 </p>
 </dd>
@@ -215,7 +306,7 @@ Azimuthally averaged (binned) equivalent of FFT( abs(map)^2 ).</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="flatsky.radial_profile">
-<span class="sig-prename descclassname"><span class="pre">flatsky.</span></span><span class="sig-name descname"><span class="pre">radial_profile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minbin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxbin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">binsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">get_errors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#flatsky.radial_profile" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">flatsky.</span></span><span class="sig-name descname"><span class="pre">radial_profile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minbin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxbin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">binsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">get_errors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radial_bins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#flatsky.radial_profile" title="Link to this definition"></a></dt>
 <dd><p>get the radial profile of an image (both real and fourier space).
 Can be used to compute radial profile of stacked profiles or 2D power spectrum.</p>
 <dl class="field-list simple">
@@ -235,6 +326,7 @@ default is 1.</p></li>
 <li><p><strong>get_errors</strong> (<em>bool</em>) – obtain scatter in each bin.
 This is not the error due to variance. Just the sample variance.
 Default is False.</p></li>
+<li><p><strong>radial_bins</strong> (<em>None</em>) – Supply your own radial bins for radial averaging.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
