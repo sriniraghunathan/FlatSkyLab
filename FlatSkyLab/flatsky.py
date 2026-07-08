@@ -31,7 +31,7 @@ def get_lxly(map_shape, pixel_res_radians):
 
     return lx, ly
 
-def map2cl(map_shape, pixel_res_radians, flatskymap1, flatskymap2 = None, minbin = 0, maxbin = 10000, binsize = 100, mask = None, filter_2d = None, ell_bins = None):
+def map2cl(map_shape, pixel_res_radians, flatskymap1, flatskymap2 = None, minbin = 0, maxbin = 10000, binsize = 100, mask = None, filter_2d = None, ell_bins = None, return_2D = False):
 
     """
     map2cl module - get the power spectra of map/maps
@@ -67,18 +67,22 @@ def map2cl(map_shape, pixel_res_radians, flatskymap1, flatskymap2 = None, minbin
         Default is None.
     ell_bins: array
         Custom multipoles for averaging the power spectra.
+    return_2D: bool
+        If True, return the 2D PSD.
+        Default is False.
 
     Returns
     -------
     el: array.
         Multipoles (scales) over which the power spectrum is defined.
     cl: array.
-        1d power spectrum.
-        Azimuthally averaged (binned) equivalent of FFT( abs(map)^2 ).
+        2D PSD
+        or 1d azimuthally averaged (binned) equivalent of FFT( abs(map)^2 ).
     """
 
     ny, nx = map_shape
     lx, ly = get_lxly(map_shape, pixel_res_radians)
+    ell_grid = np.sqrt( lx**2 + ly**2. )
 
     if binsize == None:
         binsize = lx.ravel()[1] -lx.ravel()[0]
@@ -93,12 +97,14 @@ def map2cl(map_shape, pixel_res_radians, flatskymap1, flatskymap2 = None, minbin
         flatskymap_psd = flatskymap_psd / filter_2d
         flatskymap_psd[np.isnan(flatskymap_psd) | np.isinf(flatskymap_psd)] = 0.
 
-
-    el, cl = radial_profile(flatskymap_psd, (lx,ly), binsize = binsize, minbin = minbin, maxbin = maxbin, radial_bins = ell_bins)
-    
     if mask is not None:
         fsky = np.mean(mask**2.)
-        cl /= fsky
+        flatskymap_psd /= fsky
+
+    if return_2D:
+        return ell_grid, flatskymap_psd
+
+    el, cl = radial_profile(flatskymap_psd, (lx,ly), binsize = binsize, minbin = minbin, maxbin = maxbin, radial_bins = ell_bins)
 
     return el, cl
     
