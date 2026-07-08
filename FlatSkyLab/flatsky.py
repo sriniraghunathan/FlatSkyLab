@@ -452,8 +452,7 @@ def make_gaussian_realisations(el, cl_dict, sim_shape, pixel_res_radians_or_inv_
 def get_fourier_filters(map_shape, pixel_res_radians, l1_cutoff, l2_cutoff = None, filter_type = 'lpf'):
     
     """
-    get_fourier_filters module - Get Fourier space filters.
-    Supports low-pass, high-pass, and band-pass filters.
+    get_fourier_filters module - Get Fourier space filters. Supports low-pass, high-pass, and band-pass filters.
 
     Parameters
     ----------
@@ -502,8 +501,7 @@ def get_fourier_filters(map_shape, pixel_res_radians, l1_cutoff, l2_cutoff = Non
 def get_wiener_filter(map_shape, pixel_res_radians, cl_signal, cl_noise, el = None, return_2D = True):
 
     """
-    get_fourier_filters module - Get Fourier space filters.
-    Supports low-pass, high-pass, and band-pass filters.
+    get_wiener_filter module - Get the Wiener filter.
 
     Parameters
     ----------
